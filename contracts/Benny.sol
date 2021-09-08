@@ -40,7 +40,7 @@ contract Benny is IERC20 {
 
     function _mint(address _owner, uint _amount) internal virtual {
         require(_owner != address(0));
-        require((_amount + _totalSupply) <= _maxBennies);
+        require((_amount + _totalSupply) <= _maxBennies);    // check if the amount requested + current supply doesn't exceed max.
         _addressBalances[_owner] += _amount;
         _totalSupply += _amount;
     }
