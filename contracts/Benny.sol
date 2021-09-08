@@ -1,23 +1,32 @@
-pragma solidity >=0.5.0 < 0.9.0;
+pragma solidity >=0.7.0 <0.9.0;
 import "./ERC20Interface.sol";
-import "./BennyBuilder.sol";
 import "./SafeMath.sol";
 
-abstract contract Benny is BennyBuilder, IERC20 {
+contract Benny is IERC20 {
+    uint _maxBennies = 1000;
+    uint _totalSupply;
+    string _name; 
+    //using SafeMath for uint256;
+    mapping (address => uint) _addressBalances;
 
-    function totalSupply() external override view returns (uint) {
-        return maxBennies;
-    }
-    function balanceOf(address _owner) external override view returns (uint) {
-        return addressToBennies[_owner];
-    }
-
-    function _transfer(address _to, address _from, uint _tokenId) internal {
-        require(addressToId[_from] == _tokenId || addressToId[msg.sender] == _tokenId);
-        addressToBennies[_from] = addressToBennies[_from].sub(1);
-        addressToBennies[_to] = addressToBennies[_to].add(1);
-        emit Transfer(_to, _from, _tokenId);
-
+    constructor() {
+        _mint(msg.sender, _maxBennies);
+        _name = "Bennies!";
     }
 
+    function name() public pure returns (string memory name) {
+        return _name;
+    }
+
+    function _transfer(address _to, address _from, uint _amount) internal {
+        require(_addressBalances[_from] >= _amount);
+        _addressBalances[_from] -= _amount;
+        _addressBalances[_to] += _amount;
+        emit Transfer(_from, _to, _amount);
+    }
+
+    function _mint(address _owner, uint _amount) internal virtual {
+        require(_owner != address(0));
+        require((_amount + _totalSupply) <= _maxBennies);
+    }
 }
