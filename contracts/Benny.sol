@@ -19,11 +19,11 @@ contract Benny is BennyHelper, ERC20 {
         _symbol = "BNNY";
     }
 
-    function name() public override pure returns (string memory) {
+    function name() public override view returns (string memory) {
         return _name;
     }
 
-    function symbol() public override pure returns (string memory) {
+    function symbol() public override view returns (string memory) {
         return _symbol;
     }
     
@@ -31,7 +31,7 @@ contract Benny is BennyHelper, ERC20 {
         return _addressBalances[_owner];
     }
 
-    function totalSupply() public override pure returns (uint) {
+    function totalSupply() public override view returns (uint) {
         return _totalSupply;
     }
 
