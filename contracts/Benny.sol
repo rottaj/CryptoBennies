@@ -1,8 +1,9 @@
 pragma solidity >=0.7.0 <0.9.0;
 import "./ERC20Interface.sol";
+import "./Helper.sol";
 import "./SafeMath.sol";
 
-contract Benny is IERC20 {
+contract Benny is Helper, IERC20 {
     uint _maxBennies = 1000;
     uint _totalSupply;
     string _name; 
@@ -12,7 +13,7 @@ contract Benny is IERC20 {
     mapping (address => mapping (address => uint)) private _allowances;
 
     constructor() {
-        _mint(msg.sender, (_maxBennies / 2));
+        _mint(msg.sender, (_maxBennies / 2)); // Mint half to me... Allowing others to mint their own.
         _name = "Bennies!";
         _symbol = "BNNY";
     }
@@ -59,6 +60,7 @@ contract Benny is IERC20 {
 
     function _mint(address _owner, uint _amount) internal virtual {
         require(_owner != address(0));
+        require(_amount <= 10); // only allow to mint 10 at a time.
         require((_amount + _totalSupply) <= _maxBennies);    // check if the amount requested + current supply doesn't exceed max.
         _addressBalances[_owner] += _amount;
         _totalSupply += _amount; // add minted amount to total supply.
