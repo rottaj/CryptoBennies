@@ -1,9 +1,10 @@
 pragma solidity >=0.7.0 <0.9.0;
-import "./ERC20Interface.sol";
-import "./Helper.sol";
+//import "./ERC20Interface.sol";
+import "./BennyHelper.sol";
 import "./SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract Benny is Helper, IERC20 {
+contract Benny is BennyHelper, ERC20 {
     uint _maxBennies = 1000;
     uint _totalSupply;
     string _name; 
@@ -12,17 +13,17 @@ contract Benny is Helper, IERC20 {
     mapping (address => uint) private _addressBalances;
     mapping (address => mapping (address => uint)) private _allowances;
 
-    constructor() {
+    constructor() ERC20("Bennies", "BNNY"){
         _mint(msg.sender, (_maxBennies / 2)); // Mint half to me... Allowing others to mint their own.
         _name = "Bennies!";
         _symbol = "BNNY";
     }
 
-    function name() public pure returns (string memory) {
+    function name() public override pure returns (string memory) {
         return _name;
     }
 
-    function symbol() public pure returns (string memory) {
+    function symbol() public override pure returns (string memory) {
         return _symbol;
     }
     
@@ -43,7 +44,7 @@ contract Benny is Helper, IERC20 {
         return true;
     }
 
-    function _approve(address _owner, address _spender, uint256 _amount) private {
+    function _approve(address _owner, address _spender, uint256 _amount) internal virtual override {
         require(_owner != address(0));
         require(_spender != address(0));
         _allowances[_owner][_spender] = _amount;
@@ -51,14 +52,14 @@ contract Benny is Helper, IERC20 {
 
     }
 
-    function _transfer(address _to, address _from, uint _amount) internal {
+    function _transfer(address _to, address _from, uint _amount) internal override {
         require(_addressBalances[_from] >= _amount); // check if amount doesn't exceed address balance.
         _addressBalances[_from] -= _amount;
         _addressBalances[_to] += _amount;
         emit Transfer(_from, _to, _amount);
     }
 
-    function _mint(address _owner, uint _amount) internal virtual {
+    function _mint(address _owner, uint _amount) internal virtual override {
         require(_owner != address(0));
         require(_amount <= 10); // only allow to mint 10 at a time.
         require((_amount + _totalSupply) <= _maxBennies);    // check if the amount requested + current supply doesn't exceed max.
